@@ -1,0 +1,114 @@
+[gd_scene load_steps=8 format=3 uid="uid://bajqadt5mmf4t"]
+
+[ext_resource type="Script" uid="uid://bwa618ultlryu" path="res://scenes/main.gd" id="1_0wfyh"]
+[ext_resource type="Texture2D" uid="uid://baem66bn8hkcd" path="res://assets/background.png" id="1_o5qli"]
+[ext_resource type="Texture2D" uid="uid://6d5k4v36hbri" path="res://assets/ground.png" id="3_sugp2"]
+[ext_resource type="PackedScene" uid="uid://vl4wbt058e1k" path="res://scenes/player.tscn" id="4_jyhfs"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_jyhfs"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_jyhfs"]
+font_size = 64
+outline_size = 10
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_tbgi4"]
+font_size = 64
+outline_size = 10
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_0wfyh")
+
+[node name="Background" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.2, 0.2)
+repeat_size = Vector2(480, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background"]
+position = Vector2(240, 400)
+texture = ExtResource("1_o5qli")
+
+[node name="PipeContainer" type="Node2D" parent="."]
+
+[node name="Ground" type="Parallax2D" parent="."]
+repeat_size = Vector2(480, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Ground"]
+position = Vector2(240, 400)
+texture = ExtResource("3_sugp2")
+
+[node name="Player" parent="." instance=ExtResource("4_jyhfs")]
+position = Vector2(70, 205)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(-84, -153)
+offset = Vector2(240, 400)
+limit_top = -400
+limit_bottom = 400
+
+[node name="BoundaryL" type="StaticBody2D" parent="."]
+position = Vector2(0, 663)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryL"]
+shape = SubResource("WorldBoundaryShape2D_jyhfs")
+
+[node name="BoundaryU" type="StaticBody2D" parent="."]
+position = Vector2(0, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryU"]
+rotation = 3.14159
+shape = SubResource("WorldBoundaryShape2D_jyhfs")
+
+[node name="PipeTimer" type="Timer" parent="."]
+wait_time = 2.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ScoreLabel" type="Label" parent="CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "0"
+label_settings = SubResource("LabelSettings_jyhfs")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartLabel" type="Label" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Click
+to
+Play"
+label_settings = SubResource("LabelSettings_tbgi4")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BlackOut" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+metadata/_edit_lock_ = true
+
+[node name="GameOverTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[connection signal="died" from="Player" to="." method="_on_player_died"]
+[connection signal="timeout" from="PipeTimer" to="." method="_on_pipe_timer_timeout"]
+[connection signal="timeout" from="GameOverTimer" to="." method="_on_game_over_timer_timeout"]
